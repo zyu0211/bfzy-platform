@@ -1,0 +1,16 @@
+# ===================================================================
+# 开发环境配置
+# ===================================================================
+spring:
+  datasource:
+    # SQLite 开发数据库，文件保存在项目根目录 data/ 下
+    url: jdbc:sqlite:./data/bfzy-platform-dev.db
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台打印 SQL
+
+logging:
+  level:
+    com.bfzy.platform: DEBUG
+    org.springframework.cache: TRACE

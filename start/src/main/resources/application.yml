@@ -1,0 +1,45 @@
+# ===================================================================
+# BFZY Platform 应用配置
+# ===================================================================
+server:
+  port: 8080
+
+spring:
+  application:
+    name: bfzy-platform
+
+  # ---- 数据源：SQLite ----
+  datasource:
+    url: jdbc:sqlite:./data/bfzy-platform.db
+    driver-class-name: org.sqlite.JDBC
+    username:
+    password:
+
+# ---- MyBatis-Plus 全局配置 ----
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: auto                     # 主键自增
+      logic-delete-field: deleted       # 逻辑删除字段
+      logic-delete-value: 1             # 已删除
+      logic-not-delete-value: 0         # 未删除
+    banner: false                       # 关闭启动 Banner
+  mapper-locations: classpath*:mapper/**/*.xml  # 跨模块扫描 Mapper XML
+  configuration:
+    map-underscore-to-camel-case: true  # 驼峰映射
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+
+# ---- Actuator 端点 ----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# ---- 日志 ----
+logging:
+  level:
+    com.bfzy.platform: DEBUG

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.bfzy.platform</groupId>
+        <artifactId>bfzy-platform</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>start</artifactId>
+    <packaging>jar</packaging>
+    <description>启动模块 — 全局 Spring Boot 启动器，聚合所有业务模块</description>
+
+    <dependencies>
+        <!-- 内部模块 -->
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>common-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>hello-world</artifactId>
+        </dependency>
+
+        <!-- Web（spring-boot-starter-web 由 common-spring 传递引入） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- 数据库 → SQLite 驱动（MyBatis-Plus 由 data 模块传递） -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

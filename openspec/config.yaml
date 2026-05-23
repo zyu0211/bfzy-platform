@@ -1,0 +1,15 @@
+# BFZY Platform — OpenSpec Project Configuration
+schema: spec-driven
+context: |
+  BFZY Platform is a personal monolithic server framework.
+  Tech stack: Java 21, Spring Boot 3.5.14, Maven multi-module, SQLite (default DB), MyBatis-Plus 3.5.16.
+  Group ID: com.bfzy.platform
+  Modules: common (pure Java infra), common-spring (Spring-aware components), data (MyBatis-Plus + entity base), hello-world (example), start (boot entry).
+  ApiResponse<T> is the unified response wrapper for all REST endpoints (code/success/message/data/timestamp/trace_id).
+  ErrorCode interface provides getCode() + getHttpStatus() + getMessage() — HTTP status and business code are independent.
+rules:
+  proposal:
+    - Include which module(s) will be affected
+  specs:
+    - Use SHALL/MUST per RFC 2119
+    - Every requirement must have at least one scenario
