@@ -7,9 +7,41 @@ Spring 感知的公共组件模块，依赖 `common` + `spring-boot-starter-web`
 ## 内容
 
 ```
+filter/
+  ├── TraceIdFilter.java           # 请求链路 TraceId 注入（OncePerRequestFilter @Order(1)）
+  └── AccessLogFilter.java         # 访问日志记录（OncePerRequestFilter @Order(2)）
+advice/
+  └── TraceIdResponseAdvice.java   # ApiResponse.traceId 自动填充 + 存储响应码（ResponseBodyAdvice）
 exception/
   └── GlobalExceptionHandler.java
 ```
+
+### TraceIdFilter
+
+`@Component @Order(1)` — 在每个 HTTP 请求入口处：
+
+1. 从 `X-Trace-Id` 请求头读取 traceId（支持上游透传）
+2. 不存在则自动生成 16 位 hex 字符串
+3. 注入 `MDC.put("traceId", ...)`，供日志 `[%X{traceId}]` 使用
+4. 写入 `X-Trace-Id` 响应头
+5. 请求结束时 `MDC.remove("traceId")` 防止线程池污染
+
+### TraceIdResponseAdvice
+
+`@ControllerAdvice @Order(1)` — 在所有 Controller + 异常处理器返回 `ApiResponse` 时：
+- 自动将 MDC 中的 traceId 写入 `apiResponse.setTraceId()`
+- 同时将业务响应码存入请求属性 `_apiResponseCode`，供 `AccessLogFilter` 在响应日志中读取
+
+### AccessLogFilter
+
+`@Component @Order(2)`（在 TraceIdFilter 之后执行）— 记录每次 HTTP 调用：
+
+```
+→ GET /api/health | from 127.0.0.1 | agent: curl/8.0
+← GET /api/health | status=200 | bizCode=200 12ms
+```
+
+在请求入口处记录（方法、URI、客户端 IP、User-Agent），响应返回后记录（状态码、耗时、业务码）。
 
 ### GlobalExceptionHandler
 

@@ -33,7 +33,38 @@ All REST endpoints SHALL return responses wrapped in `ApiResponse<T>` with a con
 - GIVEN `ApiResponse` has a field named `traceId`
 - WHEN the response is serialized
 - THEN the JSON key SHALL be `"trace_id"` (via `@JsonProperty("trace_id")`)
-- AND the field value SHALL be `null` when not explicitly set (placeholder only)
+- AND the field value SHALL be auto-filled by `TraceIdResponseAdvice` from MDC context
+
+#### Scenario: TraceId auto-fill via ResponseBodyAdvice
+
+- GIVEN `TraceIdResponseAdvice` is registered as a `@ControllerAdvice`
+- WHEN any controller or exception handler returns an `ApiResponse`
+- THEN `TraceIdResponseAdvice.beforeBodyWrite` SHALL inject the current request's `traceId` from MDC into `apiResponse.setTraceId()`
+- AND the developer SHALL NOT need to manually set `traceId`
+
+#### Scenario: TraceId lifecycle via filter
+
+- GIVEN an HTTP request reaches the application
+- WHEN `TraceIdFilter.doFilterInternal` executes
+- THEN it SHALL check the `X-Trace-Id` request header for upstream trace propagation
+- AND if absent, SHALL generate a new 16-character hex trace ID
+- AND SHALL set `MDC.put("traceId", traceId)`
+- AND SHALL set the response header `X-Trace-Id`
+- AND SHALL call `MDC.remove("traceId")` in the `finally` block to prevent thread-pool context pollution
+
+#### Scenario: Log pattern includes traceId
+
+- GIVEN the logging configuration
+- WHEN any log statement is written during request processing
+- THEN the log pattern SHALL include `[%X{traceId}]` to display the current request's trace ID
+- AND every request's log lines SHALL be linkable by their trace ID
+
+#### Scenario: Response code stored for access log
+
+- GIVEN `TraceIdResponseAdvice` processes an `ApiResponse` response
+- WHEN the response body contains a `code` field (business code)
+- THEN the advice SHALL store that code as a request attribute named `_apiResponseCode`
+- AND `AccessLogFilter` SHALL read that attribute in its `finally` block to include it in the response log line
 
 ### Requirement: Error Code Interface
 
@@ -139,6 +170,17 @@ Constants SHALL be organized into dedicated classes by domain rather than a sing
 - GIVEN `DateConstant` class
 - WHEN referencing date/time format patterns
 - THEN `DateConstant.DATE_TIME_FORMAT` ("yyyy-MM-dd HH:mm:ss"), `DATE_FORMAT` ("yyyy-MM-dd"), and `TIME_FORMAT` ("HH:mm:ss") SHALL be available
+
+### Requirement: Hutool Utility Library
+
+The `common` module SHALL depend on `cn.hutool:hutool-all` to provide a comprehensive set of Java utility functions, available transitively to all modules.
+
+#### Scenario: Common utility usage
+
+- GIVEN any module depends on `common` (directly or transitively)
+- WHEN the developer needs string, collection, UUID, date, or bean operations
+- THEN `hutool-all` SHALL be available on the classpath
+- AND the developer SHALL prefer Hutool utilities over hand-written helpers for common operations
 
 ### Requirement: JSON Utility
 

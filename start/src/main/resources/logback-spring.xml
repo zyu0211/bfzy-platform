@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 引用 Spring Boot 默认配置 -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- ==================== 公共属性常量 ==================== -->
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] %-5level %logger{36} - %msg%n"/>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] %highlight(%-5level) %cyan(%logger{36}) - %msg%n"/>
+
+    <property name="LOG_DIR" value="./logs"/>
+    <property name="APP_FILE_BASE" value="bfzy-platform"/>
+    <property name="ERROR_FILE_BASE" value="bfzy-platform-error"/>
+    <property name="SQL_FILE_BASE" value="bfzy-platform-sql"/>
+    <property name="DEFAULT_MAX_HISTORY" value="30"/>
+    <property name="ERROR_MAX_HISTORY" value="60"/>
+
+    <!-- ==================== 跨环境通用 Appender ==================== -->
+
+    <!-- 控制台（dev 独占 / prod 辅助） -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- ==================== 开发环境：仅控制台 ==================== -->
+    <springProfile name="dev | test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <!-- ==================== 生产环境：文件分离 ==================== -->
+
+    <springProfile name="!dev &amp; !test">
+
+        <!-- 应用日志文件（INFO/WARN，过滤掉 DEBUG 和 ERROR） -->
+        <appender name="APP_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/${APP_FILE_BASE}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/${APP_FILE_BASE}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+                <maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <!-- 先只保留 >= INFO，再从结果中排除 ERROR，最终只剩 INFO/WARN -->
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>INFO</level>
+            </filter>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>ERROR</level>
+                <onMatch>DENY</onMatch>
+                <onMismatch>ACCEPT</onMismatch>
+            </filter>
+        </appender>
+
+        <!-- 错误日志文件（仅 ERROR） -->
+        <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/${ERROR_FILE_BASE}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/${ERROR_FILE_BASE}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+                <maxHistory>${ERROR_MAX_HISTORY}</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>ERROR</level>
+            </filter>
+        </appender>
+
+        <!-- SQL 执行日志文件（仅 DEBUG，由 SqlLogImpl 统一写入 "SQL" logger） -->
+        <appender name="SQL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_DIR}/${SQL_FILE_BASE}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_DIR}/${SQL_FILE_BASE}.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+                <maxHistory>${DEFAULT_MAX_HISTORY}</maxHistory>
+            </rollingPolicy>
+            <encoder>
+                <pattern>${LOG_PATTERN}</pattern>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>DEBUG</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+
+        <!-- 路由：MyBatis SQL 执行日志（由 SqlLogImpl 统一写入 "SQL" logger）→ SQL_FILE -->
+        <logger name="SQL" level="DEBUG" additivity="false">
+            <appender-ref ref="SQL_FILE"/>
+        </logger>
+
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="APP_FILE"/>
+            <appender-ref ref="ERROR_FILE"/>
+        </root>
+
+    </springProfile>
+
+</configuration>

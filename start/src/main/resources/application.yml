@@ -7,6 +7,8 @@ server:
 spring:
   application:
     name: bfzy-platform
+  profiles:
+    active: dev
 
   # ---- 数据源：SQLite ----
   datasource:

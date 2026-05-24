@@ -1,6 +1,6 @@
 # common — AGENTS.md
 
-纯 Java 模块，**零 Spring 框架依赖**，仅依赖 Jackson（databind + jsr310）。
+纯 Java 模块，**零 Spring 框架依赖**，依赖 Jackson（databind + jsr310）+ Hutool（工具类库）。
 
 ## 包结构
 
@@ -49,10 +49,25 @@ PageResult.of(records, total, page, pageSize);  // 自动算 totalPages
 PageResult.empty();                              // 空结果
 ```
 
+### 5. Hutool 工具类库
+
+模块依赖 `hutool-all`，所有继承 `common` 的模块均可直接使用。常用工具：
+
+```java
+IdUtil.fastSimpleUUID();      // 紧凑 UUID（无横线）
+StrUtil.isBlank(str);         // 字符串判空
+StrUtil.format("hello {}", name);  // 格式化
+CollUtil.isEmpty(list);       // 集合判空
+BeanUtil.copyProperties(a, b);     // 属性复制
+DateUtil.format(date, "yyyy-MM-dd"); // 日期格式化
+```
+
+详见 [Hutool 文档](https://hutool.cn/docs)。
+
 ## 依赖说明
 
 ```xml
-<!-- common/pom.xml — 仅 Jackson -->
+<!-- common/pom.xml — Jackson + Hutool -->
 <dependency>
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
@@ -60,6 +75,11 @@ PageResult.empty();                              // 空结果
 <dependency>
     <groupId>com.fasterxml.jackson.datatype</groupId>
     <artifactId>jackson-datatype-jsr310</artifactId>
+</dependency>
+<!-- Hutool — 版本由父 POM dependencyManagement 统一管理 -->
+<dependency>
+    <groupId>cn.hutool</groupId>
+    <artifactId>hutool-all</artifactId>
 </dependency>
 ```
 

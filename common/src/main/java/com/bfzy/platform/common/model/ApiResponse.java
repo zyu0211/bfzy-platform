@@ -76,6 +76,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(T data) {
         return ApiResponse.<T>builder()
                 .code(SystemErrorCode.SUCCESS.getCode())
+                .success(true)
                 .message(SystemErrorCode.SUCCESS.getMessage())
                 .data(data)
                 .timestamp(Instant.now().toEpochMilli())
@@ -95,6 +96,7 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> fail(int code, String message) {
         return ApiResponse.<T>builder()
                 .code(code)
+                .success(code == SystemErrorCode.SUCCESS.getCode())
                 .message(message)
                 .timestamp(Instant.now().toEpochMilli())
                 .build();

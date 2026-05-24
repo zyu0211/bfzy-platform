@@ -13,9 +13,23 @@
 ## 内容
 
 ```
+logging/
+  └── SqlLogImpl.java      # MyBatis SQL 日志适配器（将日志统一路由到 "SQL" logger）
 model/entity/
   └── BaseEntity.java
 ```
+
+### SqlLogImpl
+
+MyBatis `org.apache.ibatis.logging.Log` 接口的自定义实现。在 `application-prod.yml` 中配置为：
+
+```yaml
+mybatis-plus:
+  configuration:
+    log-impl: com.bfzy.platform.data.logging.SqlLogImpl
+```
+
+无论 MyBatis 执行哪个 mapper 的 SQL，所有日志（SQL 语句、参数等）都通过 `"SQL"` 这个 logger 输出。生产环境下由 logback 的 `<logger name="SQL">` 路由到独立文件，与业务代码的 DEBUG 日志完全隔离。
 
 ### BaseEntity
 

@@ -12,6 +12,7 @@ spring:
     url: jdbc:sqlite:./data/bfzy-platform-prod.db
     driver-class-name: org.sqlite.JDBC
 
-logging:
-  level:
-    com.bfzy.platform: WARN
+mybatis-plus:
+  configuration:
+    # 自定义 SQL 日志适配器，将所有 MyBatis 日志统一路由到 "SQL" logger
+    log-impl: com.bfzy.platform.data.logging.SqlLogImpl

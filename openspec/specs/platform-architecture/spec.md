@@ -74,6 +74,61 @@ The system SHALL provide a `start` module that aggregates all business modules a
 - AND `classpath*:mapper/**/*.xml` SHALL load mapper XML files across all modules
 - AND the global config (`id-type: auto`, `logic-delete-field: deleted`) SHALL apply to all entities
 
+### Requirement: Logging Configuration
+
+The system SHALL provide a centralized logging configuration via `logback-spring.xml` in the `start` module.
+
+#### Scenario: Console logging (dev)
+
+- GIVEN the application runs with the `dev` or `test` Spring profile
+- WHEN logging output is produced
+- THEN a `CONSOLE` appender SHALL output colorized logs to stdout
+- AND the pattern SHALL include `[%X{traceId}]` for trace correlation
+
+#### Scenario: Rolling file logging (prod)
+
+- GIVEN the application runs with a non-`dev`, non-`test` profile (e.g., `prod`)
+- WHEN logging output is produced
+- THEN three rolling file appenders SHALL be active:
+
+  | Appender | File | Retention | Content |
+  |----------|------|:---------:|---------|
+  | `APP_FILE` | `./logs/bfzy-platform.log` | 30 days | INFO/WARN (ERROR filtered out) |
+  | `ERROR_FILE` | `./logs/bfzy-platform-error.log` | 60 days | ERROR+ only |
+  | `SQL_FILE` | `./logs/bfzy-platform-sql.log` | 30 days | `"SQL"` logger (MyBatis execution logs) |
+
+- AND all three SHALL use `TimeBasedRollingPolicy` with daily rotation and gzip compression
+- AND `APP_FILE` SHALL use a `LevelFilter` combined with a `ThresholdFilter` to keep only INFO/WARN
+- AND `ERROR_FILE` SHALL use a `ThresholdFilter` to accept only ERROR+
+- AND `SQL_FILE` SHALL use a `LevelFilter` to accept only DEBUG level
+- AND a dedicated `<logger name="SQL" level="DEBUG" additivity="false">` SHALL route MyBatis logs exclusively to `SQL_FILE`
+- AND `application-prod.yml` SHALL configure `log-impl: com.bfzy.platform.data.logging.SqlLogImpl` — a custom `org.apache.ibatis.logging.Log` adapter that writes all MyBatis logs to the `"SQL"` logger, isolating them from project DEBUG logs
+- AND `application-dev.yml` SHALL keep `log-impl: org.apache.ibatis.logging.stdout.StdOutImpl` for direct console output
+
+#### Scenario: Dev profile logging
+
+- GIVEN the application runs with the `dev` or `test` Spring profile
+- WHEN logging output is produced
+- THEN only the `CONSOLE` appender SHALL be active
+- AND no files SHALL be written
+
+### Requirement: Access Log
+
+The system SHALL log HTTP request and response information for every API call via `AccessLogFilter`.
+
+#### Scenario: Request log
+
+- GIVEN a request reaches the application
+- WHEN `AccessLogFilter` executes before the controller
+- THEN it SHALL log `→ {METHOD} {URI} | from {IP} | agent: {User-Agent}`
+
+#### Scenario: Response log
+
+- GIVEN a request has been processed and a response is returning
+- WHEN `AccessLogFilter` executes after the controller (in the `finally` block)
+- THEN it SHALL log `← {METHOD} {URI} | status={HTTP_STATUS} | bizCode={API_CODE} {DURATION}ms`
+- AND the business code SHALL be read from the request attribute `_apiResponseCode` set by `TraceIdResponseAdvice`
+
 ### Requirement: Consistent Package Convention
 
 All Java source code in every module SHALL reside under the `com.bfzy.platform` package namespace.
