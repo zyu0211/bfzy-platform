@@ -11,6 +11,8 @@ import java.net.HttpURLConnection;
  * <p>
  * 各业务模块可自行定义业务错误码枚举并实现 {@link ErrorCode} 接口。
  * </p>
+ *
+ * @author zhangyu
  */
 public enum SystemErrorCode implements ErrorCode {
 

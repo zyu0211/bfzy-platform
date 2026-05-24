@@ -12,6 +12,7 @@ import java.util.List;
  * 通用分页结果.
  *
  * @param <T> 列表元素类型
+ * @author zhangyu
  */
 @Data
 @Builder
@@ -19,22 +20,34 @@ import java.util.List;
 @AllArgsConstructor
 public class PageResult<T> {
 
-    /** 当前页数据 */
+    /**
+     * 当前页数据
+     */
     private List<T> records;
 
-    /** 总记录数 */
+    /**
+     * 总记录数
+     */
     private long total;
 
-    /** 当前页码（从 1 开始） */
+    /**
+     * 当前页码（从 1 开始）
+     */
     private int page;
 
-    /** 每页记录数 */
+    /**
+     * 每页记录数
+     */
     private int pageSize;
 
-    /** 总页数 */
+    /**
+     * 总页数
+     */
     private int totalPages;
 
-    /** 空分页结果 */
+    /**
+     * 空分页结果
+     */
     public static <T> PageResult<T> empty() {
         return PageResult.<T>builder()
                 .records(Collections.emptyList())

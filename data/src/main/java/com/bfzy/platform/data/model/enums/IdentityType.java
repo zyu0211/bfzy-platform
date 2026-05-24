@@ -6,6 +6,8 @@ package com.bfzy.platform.data.model.enums;
  * 定义系统支持的认证方式，后续可在此基础上扩展 OAuth2 登录。
  * Phase 1 只使用 PASSWORD 类型。
  * </p>
+ *
+ * @author zhangyu
  */
 public enum IdentityType {
 

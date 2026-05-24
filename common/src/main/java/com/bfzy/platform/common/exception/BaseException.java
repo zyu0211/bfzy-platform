@@ -9,6 +9,8 @@ import java.net.HttpURLConnection;
  * <p>
  * 所有自定义异常的根父类，携带错误码与 HTTP 状态码，便于全局异常处理器统一捕获并返回结构化的 {@code ApiResponse}。
  * </p>
+ *
+ * @author zhangyu
  */
 @Getter
 public class BaseException extends RuntimeException {

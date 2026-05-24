@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * 健康检查与示例接口.
+ *
+ * @author zhangyu
  */
 @RestController
 @RequestMapping("/api")

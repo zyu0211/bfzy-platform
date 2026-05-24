@@ -12,6 +12,8 @@ import lombok.Setter;
  * 一个用户可绑定多种登录方式：密码、微信、QQ、邮箱、手机号等。
  * 唯一约束 (identity_type, identifier)，防止重复绑定。
  * </p>
+ *
+ * @author zhangyu
  */
 @Getter
 @Setter

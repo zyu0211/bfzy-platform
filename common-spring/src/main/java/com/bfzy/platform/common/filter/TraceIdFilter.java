@@ -27,6 +27,8 @@ import java.io.IOException;
  *   <li>请求结束时从 MDC 移除，防止线程池复用导致上下文污染</li>
  * </ul>
  * </p>
+ *
+ * @author zhangyu
  */
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

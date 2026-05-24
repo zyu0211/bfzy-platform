@@ -6,6 +6,8 @@ package com.bfzy.platform.common.exception;
  * 用于业务逻辑校验失败等场景，推荐优先使用带 {@link ErrorCode} 的构造方法，
  * 以便全局异常处理器能精确返回对应的错误码。
  * </p>
+ *
+ * @author zhangyu
  */
 public class BizException extends BaseException {
 

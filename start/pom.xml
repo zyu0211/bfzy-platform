@@ -34,7 +34,7 @@
         </dependency>
         <dependency>
             <groupId>com.bfzy.platform</groupId>
-            <artifactId>security</artifactId>
+            <artifactId>account</artifactId>
         </dependency>
 
         <!-- Web（spring-boot-starter-web 由 common-spring 传递引入） -->

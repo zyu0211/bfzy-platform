@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.bfzy.platform</groupId>
+        <artifactId>bfzy-platform</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>account</artifactId>
+    <description>账号模块 — 注册/登录/JWT 认证/账号管理</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>common-spring</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>data</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+</project>

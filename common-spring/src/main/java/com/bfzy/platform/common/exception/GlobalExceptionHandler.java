@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
  * 统一捕获各模块抛出的异常，返回结构化的 {@link ApiResponse}。
  * 各模块无需再定义自己的异常处理器，直接依赖此 common 模块即可。
  * </p>
+ *
+ * @author zhangyu
  */
 @Slf4j
 @RestControllerAdvice

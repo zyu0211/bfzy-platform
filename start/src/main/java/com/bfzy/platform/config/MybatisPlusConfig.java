@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Configuration;
  * 扫描所有模块的 Mapper 接口。
  * 分页插件由 MyBatis-Plus 3.5.16+ 自动配置，无需手动声明。
  * </p>
+ *
+ * @author zhangyu
  */
 @Configuration
 @MapperScan("com.bfzy.platform.**.mapper")

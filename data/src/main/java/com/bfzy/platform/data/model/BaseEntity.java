@@ -11,6 +11,8 @@ import java.time.LocalDateTime;
  * 所有业务模块的实体类应继承此类，统一主键策略与审计字段。
  * 纯 POJO 设计，零 ORM 框架注解，由具体的 ORM 层（MyBatis-Plus）负责映射。
  * </p>
+ *
+ * @author zhangyu
  */
 @Getter
 @Setter

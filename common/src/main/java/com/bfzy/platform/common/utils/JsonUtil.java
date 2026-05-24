@@ -17,6 +17,8 @@ import java.util.Map;
  * <p>
  * 基于 Jackson 封装，全局复用同一个 {@link ObjectMapper} 实例。
  * </p>
+ *
+ * @author zhangyu
  */
 @UtilityClass
 public class JsonUtil {

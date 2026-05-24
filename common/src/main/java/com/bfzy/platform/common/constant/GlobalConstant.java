@@ -6,6 +6,8 @@ package com.bfzy.platform.common.constant;
  * 按领域通过内部类分组，避免分散定义造成的重复或不一致。
  * 各业务模块应优先引用此处定义的常量，而非自行定义私有常量或字面量。
  * </p>
+ *
+ * @author zhangyu
  */
 public final class GlobalConstant {
     private GlobalConstant() {

@@ -2,6 +2,8 @@ package com.bfzy.platform.common.constant;
 
 /**
  * 分页相关常量.
+ *
+ * @author zhangyu
  */
 public final class PageConstant {
 

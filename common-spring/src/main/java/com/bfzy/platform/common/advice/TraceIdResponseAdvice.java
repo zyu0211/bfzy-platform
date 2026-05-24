@@ -22,6 +22,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * 自动将 MDC 中的 {@code traceId} 填充到每个 {@link ApiResponse} 的 {@code traceId} 字段，
  * 同时将业务响应码存入请求属性，供 {@code AccessLogFilter} 在响应日志中输出。
  * </p>
+ *
+ * @author zhangyu
  */
 @ControllerAdvice
 @Order(1)

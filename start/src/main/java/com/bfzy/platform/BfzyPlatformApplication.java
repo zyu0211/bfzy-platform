@@ -9,6 +9,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 通过 {@code scanBasePackages} 扫描 {@code com.bfzy.platform} 下的所有包，
  * 自动发现 common、hello-world 等模块的 Spring Bean（Controller、Service、Config 等）。
  * </p>
+ *
+ * @author zhangyu
  */
 @SpringBootApplication(scanBasePackages = "com.bfzy.platform")
 public class BfzyPlatformApplication {

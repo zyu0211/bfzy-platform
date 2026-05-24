@@ -2,7 +2,7 @@
 
 ## 项目概况
 
-Java 21 + Spring Boot 3.5 + MyBatis-Plus + SQLite 的单体服务框架。5 个 Maven 模块，模块边界清晰：`common` 纯 Java 零框架依赖，`common-spring` 托管 Spring 依赖，`data` 托管实体 + MyBatis-Plus，业务模块只依赖 `common-spring` + `data`。
+Java 21 + Spring Boot 3.5 + MyBatis-Plus + SQLite 的单体服务框架。Maven 多模块，模块边界清晰：`common` 纯 Java 零框架依赖，`common-spring` 托管 Spring 依赖，`data` 托管实体 + MyBatis-Plus，业务模块只依赖 `common-spring` + `data`。`account` 模块额外依赖 `spring-boot-starter-security` 和 `jjwt` 提供 JWT 认证。
 
 ## 关键命令
 
@@ -20,7 +20,7 @@ common (纯 Java, 仅 jackson)
 common-spring  data
 (web/valid)   (MP + 实体)
   ↑         ↑
-hello-world  │
+hello-world  account
   ↑         ↑
   └── start ←┘  (sqlite-jdbc, actuator)
 ```
@@ -35,6 +35,7 @@ hello-world  │
 | 公共基础设施（common + common-spring） | [common-infrastructure/spec.md](openspec/specs/common-infrastructure/spec.md) |
 | 数据持久化（data + SQLite + MyBatis-Plus） | [data-persistence/spec.md](openspec/specs/data-persistence/spec.md) |
 | hello-world 业务模块 | [hello-world/spec.md](openspec/specs/hello-world/spec.md) |
+| 账号认证 + JWT（account） | [account-module/spec.md](openspec/specs/account-module/spec.md) |
 
 ## 模块概览
 
@@ -42,6 +43,7 @@ hello-world  │
 - [common-spring/AGENTS.md](common-spring/AGENTS.md) — 全局异常处理器
 - [data/AGENTS.md](data/AGENTS.md) — 实体基类、MyBatis-Plus 依赖托管
 - [hello-world/AGENTS.md](hello-world/AGENTS.md) — 业务模块脚手架参考
+- [account/AGENTS.md](account/AGENTS.md) — 注册、登录、JWT 认证、账号管理
 - [start/AGENTS.md](start/AGENTS.md) — 启动入口、全局配置、自动填充
 
 ## 关键约定（不遵守会踩坑）
@@ -55,6 +57,7 @@ hello-world  │
 - **VO 分包**：API 请求类放在 `model/vo/request/`，响应类放在 `model/vo/response/`，不再混放于 `dto/`。
 - **DTO 按需使用**：`model/dto/` 仅在 Entity 与 VO 存在字段 gap 时使用，结构一致时不创建 DTO。**不加 `Dto` 后缀**。
 - **DAO 层**：复杂 SQL（多表关联/聚合）放在 `dao/` 包下，简单单表 CRUD 直接调用 Mapper。
+- **类注释 @author**：每个新建 Java 类必须在类注释中添加 `@author zhangyu`。
 
 ## 新增业务模块步骤
 
@@ -62,7 +65,7 @@ hello-world  │
 2. 父 `pom.xml` → `<modules>` 加 module、`<dependencyManagement>` 加依赖
 3. `start/pom.xml` → 加入对新模块的依赖
 4. 包结构：`controller/`、`service/`（接口） + `service/impl/`（实现）、`dao/`（接口） + `dao/impl/`（实现）、`mapper/`
-5. 实体类继承 `BaseEntity`（位于 data 模块的 `model/`），**实体集中放在 data 模块，业务模块不单独放实体**。类名加 `Entity` 后缀（`UserEntity`、`OrderEntity`）
+5. 实体类继承 `BaseEntity`（位于 data 模块的 `model/`），**实体集中放在 data 模块，业务模块不单独放实体**。类名加 `Entity` 后缀（`UserEntity`、`OrderEntity`），类注释添加 `@author zhangyu`
 6. Service 接口（`service/XxxService.java`）→ 实现（`service/impl/XxxServiceImpl.java`），实现类依赖 DAO 而非直接调 Mapper
 7. DAO 接口（`dao/XxxDao.java`）继承 `IService<Entity>` → 实现（`dao/impl/XxxDaoImpl.java`）继承 `ServiceImpl<Mapper, Entity>`
 

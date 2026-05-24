@@ -2,6 +2,8 @@ package com.bfzy.platform.common.constant;
 
 /**
  * 日期时间格式常量.
+ *
+ * @author zhangyu
  */
 public final class DateConstant {
 

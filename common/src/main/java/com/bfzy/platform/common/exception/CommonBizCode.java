@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
  *   20001~29999  认证授权 (security)
  * </pre>
  * </p>
+ *
+ * @author zhangyu
  */
 public enum CommonBizCode implements ErrorCode {
 
@@ -30,6 +32,10 @@ public enum CommonBizCode implements ErrorCode {
     PASSWORD_BLANK(20005, HttpURLConnection.HTTP_BAD_REQUEST, "密码不能为空"),
     PASSWORD_TOO_SHORT(20006, HttpURLConnection.HTTP_BAD_REQUEST, "密码长度不能少于6位"),
     USER_NOT_FOUND(20007, HttpURLConnection.HTTP_UNAUTHORIZED, "用户不存在"),
+    PASSWORD_INVALID(20008, HttpURLConnection.HTTP_BAD_REQUEST, "原密码错误"),
+    NICKNAME_BLANK(20009, HttpURLConnection.HTTP_BAD_REQUEST, "昵称不能为空"),
+    EMAIL_DUPLICATE(20010, "邮箱已被占用"),
+    PHONE_DUPLICATE(20011, "手机号已被占用"),
     ;
 
     private final int code;

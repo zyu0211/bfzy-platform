@@ -5,6 +5,8 @@ package com.bfzy.platform.common.exception;
  * <p>
  * 所有错误码枚举应实现此接口，确保整个项目的错误码结构统一。
  * </p>
+ *
+ * @author zhangyu
  */
 public interface ErrorCode {
 

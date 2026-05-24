@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
  *   configuration:
  *     log-impl: com.bfzy.platform.data.logging.SqlLogImpl
  * }</pre>
+ *
+ * @author zhangyu
  */
 public class SqlLogImpl implements Log {
 

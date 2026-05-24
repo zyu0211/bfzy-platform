@@ -29,6 +29,7 @@ bfzy-platform/
 ├── common-spring/       # Spring 感知的公共组件（全局异常处理）
 ├── data/                # 数据模型模块（实体基类，托管 MyBatis-Plus 依赖）
 ├── hello-world/         # 业务模块示例（HealthController）
+├── account/             # 账号认证模块（注册、登录、JWT 认证、账号管理）
 └── start/               # 启动模块 — Spring Boot 入口，聚合所有模块
 ```
 
@@ -39,7 +40,8 @@ common              ← 纯 Java，零框架依赖（仅 jackson）
 common-spring       ← 依赖 common + spring-boot-starter-web + validation
 data                ← 依赖 common + mybatis-plus-spring-boot3-starter
 hello-world         ← 依赖 common-spring（透传 common + web 依赖）
-start               ← 聚合 common / common-spring / data / hello-world + sqlite-jdbc
+account             ← 依赖 common-spring + data + spring-boot-starter-security + jjwt
+start               ← 聚合 common / common-spring / data / hello-world / account + sqlite-jdbc
 ```
 
 ## 技术栈

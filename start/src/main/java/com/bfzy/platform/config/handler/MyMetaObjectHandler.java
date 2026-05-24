@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
  *   <li>{@code deleted} — 插入时填充默认值 0（由全局配置处理）</li>
  * </ul>
  * </p>
+ *
+ * @author zhangyu
  */
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
