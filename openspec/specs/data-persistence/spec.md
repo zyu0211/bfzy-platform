@@ -58,16 +58,24 @@ The system SHALL use MyBatis-Plus as its ORM framework, with the `spring-boot3` 
 
 ### Requirement: Entity Base Class
 
-All database entities SHALL extend `BaseEntity`, a pure POJO with no ORM framework annotations, providing common fields.
+All database entities SHALL extend `BaseEntity`, a pure POJO with no ORM framework annotations, providing common fields. Entities SHALL use an `Entity` suffix (e.g., `UserEntity`, `UserAuthEntity`) and SHALL be placed in the `data` module's `model/` package (no `entity/` sub-package).
 
 #### Scenario: Entity inheritance
 
-- GIVEN a business entity `User extends BaseEntity`
+- GIVEN a business entity `UserEntity extends BaseEntity`
 - WHEN it is persisted
 - THEN `id` SHALL be auto-generated (via `id-type: auto` global config)
 - AND `createTime` SHALL be set automatically on insert (via `MyMetaObjectHandler`)
 - AND `updateTime` SHALL be updated automatically on modification (via `MyMetaObjectHandler`)
 - AND `deleted` SHALL default to `false` (via global `logic-delete-field: deleted` config)
+
+#### Scenario: Entity naming and location
+
+- GIVEN an entity class maps to a database table
+- WHEN placed in the `data` module
+- THEN its class name SHALL end with `Entity` (e.g., `UserEntity`, `OrderEntity`)
+- AND it SHALL be in the `data.model` package (e.g., `com.bfzy.platform.data.model.UserEntity`)
+- AND it SHALL NOT be placed in an `entity/` sub-package — `com.bfzy.platform.data.model.entity.UserEntity` is forbidden
 
 #### Scenario: Entity annotation pattern
 

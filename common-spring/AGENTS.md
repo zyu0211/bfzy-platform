@@ -16,6 +16,27 @@ exception/
   └── GlobalExceptionHandler.java
 ```
 
+### Filter 执行顺序
+
+```
+请求入口
+  │
+  ① TraceIdFilter (@Order 1)
+  │   ├─ 进入：traceId 注入 MDC，写响应头 X-Trace-Id
+  │   └─ 退出：MDC.remove("traceId")
+  │
+  ② AccessLogFilter (@Order 2)
+  │   ├─ 进入：log "→ GET /api/xxx | from IP"
+  │   └─ 退出：log "← GET /api/xxx | status=200 | cost=12ms"
+  │
+  ③ Spring Security 过滤器链（FilterChainProxy）
+  │   └─ 业务模块的 OncePerRequestFilter（如 JwtAuthFilter）
+  │
+  ④ DispatcherServlet → Controller
+```
+
+`TraceIdFilter` 始终在最外层，确保 MDC traceId 对所有下游可用；`AccessLogFilter` 在其内层，记录完整请求生命周期；JWT 等安全过滤器运行在 Spring Security 内部，在到达 Controller 前完成身份校验。
+
 ### TraceIdFilter
 
 `@Component @Order(1)` — 在每个 HTTP 请求入口处：

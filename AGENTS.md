@@ -51,14 +51,20 @@ hello-world  │
 - **MyBatis-Plus 版本**：使用 `mybatis-plus-spring-boot3-starter`（带 `spring-boot3` 后缀），**不是** `mybatis-plus-spring-boot-starter`（少 spring3 会引发启动错误）。
 - **Mapper XML 路径**：必须放在 `resources/mapper/**/*.xml`，因为 `application.yml` 中配置了 `classpath*:mapper/**/*.xml` 跨模块扫描。
 - **依赖版本**：第三方依赖版本由父 POM `<dependencyManagement>` 统一声明，子模块在 `<dependencies>` 中**省略 `<version>`**。
+- **实体命名**：实体类**加 `Entity` 后缀**（`UserEntity.java` 而非 `User.java`），放在 `data` 模块的 `model/{模块}/` 下（如 `model/security/UserEntity.java`），避免 `model.entity.UserEntity` 冗余。
+- **VO 分包**：API 请求类放在 `model/vo/request/`，响应类放在 `model/vo/response/`，不再混放于 `dto/`。
+- **DTO 按需使用**：`model/dto/` 仅在 Entity 与 VO 存在字段 gap 时使用，结构一致时不创建 DTO。**不加 `Dto` 后缀**。
+- **DAO 层**：复杂 SQL（多表关联/聚合）放在 `dao/` 包下，简单单表 CRUD 直接调用 Mapper。
 
 ## 新增业务模块步骤
 
 1. 创建目录 → `pom.xml`（父版本用 `${revision}`，依赖 `common-spring` + `data`，省略 `<version>`）
 2. 父 `pom.xml` → `<modules>` 加 module、`<dependencyManagement>` 加依赖
 3. `start/pom.xml` → 加入对新模块的依赖
-4. Controller 放在 `controller/` 包，Service 放在 `service/` 包，Mapper 放在 `mapper/` 包
-5. 实体类继承 `BaseEntity`（位于 data 模块）
+4. 包结构：`controller/`、`service/`（接口） + `service/impl/`（实现）、`dao/`（接口） + `dao/impl/`（实现）、`mapper/`
+5. 实体类继承 `BaseEntity`（位于 data 模块的 `model/`），**实体集中放在 data 模块，业务模块不单独放实体**。类名加 `Entity` 后缀（`UserEntity`、`OrderEntity`）
+6. Service 接口（`service/XxxService.java`）→ 实现（`service/impl/XxxServiceImpl.java`），实现类依赖 DAO 而非直接调 Mapper
+7. DAO 接口（`dao/XxxDao.java`）继承 `IService<Entity>` → 实现（`dao/impl/XxxDaoImpl.java`）继承 `ServiceImpl<Mapper, Entity>`
 
 更多细节参见 [hello-world/spec.md](openspec/specs/hello-world/spec.md) 和 [platform-architecture/spec.md](openspec/specs/platform-architecture/spec.md)。
 

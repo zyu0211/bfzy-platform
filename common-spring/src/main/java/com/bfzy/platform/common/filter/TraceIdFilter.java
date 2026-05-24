@@ -2,11 +2,13 @@ package com.bfzy.platform.common.filter;
 
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.bfzy.platform.common.constant.GlobalConstant;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,18 +29,8 @@ import java.io.IOException;
  * </p>
  */
 @Component
-@Order(1)
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class TraceIdFilter extends OncePerRequestFilter {
-
-    /**
-     * 请求/响应头中传递 traceId 的字段名
-     */
-    public static final String TRACE_ID_HEADER = "X-Trace-Id";
-
-    /**
-     * MDC 中存储 traceId 的 key，与 logback-spring.xml 中的 {@code [%X{traceId}]} 对应
-     */
-    public static final String MDC_TRACE_ID_KEY = "traceId";
 
     private static final int TRACE_ID_LENGTH = 16;
 
@@ -48,23 +40,23 @@ public class TraceIdFilter extends OncePerRequestFilter {
                                     FilterChain chain) throws ServletException, IOException {
 
         // 1. 从请求头获取 traceId（支持上游透传），不存在则生成
-        String traceId = request.getHeader(TRACE_ID_HEADER);
+        String traceId = request.getHeader(GlobalConstant.Header.X_TRACE_ID);
         if (StrUtil.isBlank(traceId)) {
             traceId = IdUtil.fastSimpleUUID().substring(0, TRACE_ID_LENGTH);
         }
 
         // 2. 注入 MDC
-        MDC.put(MDC_TRACE_ID_KEY, traceId);
+        MDC.put(GlobalConstant.Mdc.TRACE_ID, traceId);
 
         // 3. 写入响应头
-        response.setHeader(TRACE_ID_HEADER, traceId);
+        response.setHeader(GlobalConstant.Header.X_TRACE_ID, traceId);
 
         try {
             // 4. 继续过滤器链
             chain.doFilter(request, response);
         } finally {
             // 5. 清理 MDC（防止线程池复用导致上下文污染）
-            MDC.remove(MDC_TRACE_ID_KEY);
+            MDC.remove(GlobalConstant.Mdc.TRACE_ID);
         }
     }
 }

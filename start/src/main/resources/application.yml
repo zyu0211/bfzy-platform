@@ -9,10 +9,13 @@ spring:
     name: bfzy-platform
   profiles:
     active: dev
+  # ---- 排除自动配置 ----
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
   # ---- 数据源：SQLite ----
   datasource:
-    url: jdbc:sqlite:./data/bfzy-platform.db
+    url: jdbc:sqlite:./data/bfzy-platform-dev.db
     driver-class-name: org.sqlite.JDBC
     username:
     password:
@@ -40,6 +43,11 @@ management:
   endpoint:
     health:
       show-details: always
+
+# ---- JWT 认证配置 ----
+jwt:
+  secret: bfzy-platform-jwt-secret-key-must-be-at-least-256-bits-long
+  expiration: 86400000    # 24 小时（毫秒）
 
 # ---- 日志 ----
 logging:

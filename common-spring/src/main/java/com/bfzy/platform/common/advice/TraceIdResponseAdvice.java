@@ -1,7 +1,7 @@
 package com.bfzy.platform.common.advice;
 
 import cn.hutool.core.util.StrUtil;
-import com.bfzy.platform.common.filter.TraceIdFilter;
+import com.bfzy.platform.common.constant.GlobalConstant;
 import com.bfzy.platform.common.model.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.MDC;
@@ -27,11 +27,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 @Order(1)
 public class TraceIdResponseAdvice implements ResponseBodyAdvice<Object> {
 
-    /**
-     * 请求属性名，用于 AccessLogFilter 读取响应业务码
-     */
-    public static final String ATTR_RESPONSE_CODE = "_apiResponseCode";
-
     @Override
     public boolean supports(MethodParameter returnType,
                             Class<? extends HttpMessageConverter<?>> converterType) {
@@ -47,14 +42,14 @@ public class TraceIdResponseAdvice implements ResponseBodyAdvice<Object> {
                                   ServerHttpResponse response) {
         if (body instanceof ApiResponse<?> apiResponse) {
             // 填充 traceId
-            String traceId = MDC.get(TraceIdFilter.MDC_TRACE_ID_KEY);
+            String traceId = MDC.get(GlobalConstant.Mdc.TRACE_ID);
             if (StrUtil.isNotBlank(traceId)) {
                 apiResponse.setTraceId(traceId);
             }
             // 存储业务码供 AccessLogFilter 读取
             ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if (attrs != null) {
-                attrs.getRequest().setAttribute(ATTR_RESPONSE_CODE, apiResponse.getCode());
+                attrs.getRequest().setAttribute(GlobalConstant.RequestAttr.API_RESPONSE_CODE, apiResponse.getCode());
             }
         }
         return body;

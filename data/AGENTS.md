@@ -15,13 +15,14 @@
 ```
 logging/
   └── SqlLogImpl.java      # MyBatis SQL 日志适配器（将日志统一路由到 "SQL" logger）
-model/entity/
-  └── BaseEntity.java
+model/
+  ├── BaseEntity.java      # 实体基类（纯 POJO，主键 + 审计字段 + 逻辑删除）
+  ├── security/
+  │   ├── UserEntity.java      # 用户档案（@TableName("sys_user")）
+  │   └── UserAuthEntity.java  # 用户认证方式（@TableName("sys_user_auth")）
+  └── enums/
+      └── IdentityType.java # 认证类型枚举（PASSWORD, WECHAT_OPENID ...）
 ```
-
-### SqlLogImpl
-
-MyBatis `org.apache.ibatis.logging.Log` 接口的自定义实现。在 `application-prod.yml` 中配置为：
 
 ```yaml
 mybatis-plus:
@@ -44,13 +45,19 @@ public abstract class BaseEntity {
 }
 ```
 
+### 实体类命名
+
+- 所有实体类**加 `Entity` 后缀**（`UserEntity`、`UserAuthEntity`）
+- 包名中不包含 `entity`，直接放在 `model/` 下：`com.bfzy.platform.data.model.UserEntity`
+- 避免 `model.entity.UserEntity` 的包+类名冗余
+
 业务实体示例：
 
 ```java
 @TableName("sys_user")
-public class User extends BaseEntity {
+public class UserEntity extends BaseEntity {
     private String username;
-    private String password;
+    private String nickname;
 }
 ```
 

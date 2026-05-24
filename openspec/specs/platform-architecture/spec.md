@@ -139,9 +139,67 @@ All Java source code in every module SHALL reside under the `com.bfzy.platform` 
 - WHEN examining its source root
 - THEN the base package SHALL be `com.bfzy.platform.helloworld`
 - AND controllers SHALL be in `com.bfzy.platform.helloworld.controller`
-- AND services SHALL be in `com.bfzy.platform.helloworld.service`
-- AND mappers SHALL be in `com.bfzy.platform.helloworld.mapper`
+- AND service interfaces SHALL be in `com.bfzy.platform.helloworld.service`
+- AND service implementations SHALL be in `com.bfzy.platform.helloworld.service.impl`
+- AND data access interfaces (DAO) SHALL be in `com.bfzy.platform.helloworld.dao`
+- AND DAO implementations SHALL be in `com.bfzy.platform.helloworld.dao.impl`
+- AND MyBatis-Plus Mapper interfaces SHALL be in `com.bfzy.platform.helloworld.mapper`
 - AND mapper XML SHALL be in `src/main/resources/mapper/`
+
+### Requirement: Layered Architecture Convention
+
+Each business module SHALL follow a layered architecture with standardized package naming for internal data classes.
+
+#### Scenario: Entity naming (Entity suffix)
+
+- GIVEN a class maps to a database table
+- WHEN placed in the `data` module's `model/` package
+- THEN it SHALL have an `Entity` suffix (e.g., `UserEntity.java` not `User.java`)
+- AND it SHALL NOT be placed in an `entity/` sub-package (e.g., `com.bfzy.platform.data.model.UserEntity` not `com.bfzy.platform.data.model.entity.UserEntity`)
+- AND this avoids the `model.entity.UserEntity` package+class redundancy
+
+#### Scenario: VO (View Object) classification
+
+- GIVEN a class serves as a Controller/Service method parameter or return value
+- WHEN it represents an API request
+- THEN it SHALL be placed in `model/vo/request/` (e.g., `LoginRequest.java`)
+- WHEN it represents an API response
+- THEN it SHALL be placed in `model/vo/response/` (e.g., `LoginResponse.java`)
+- AND the Service layer SHALL use these VO classes directly for method input and output
+
+#### Scenario: DTO for Entity-VO gaps
+
+- GIVEN there is a structural gap between an Entity and its corresponding VO
+- WHEN the transformation logic is non-trivial (field merge, rename, or computation)
+- THEN a DTO class SHALL be placed in `model/dto/` to bridge the gap
+- AND it SHALL NOT have a `Dto` suffix (e.g., `UserCreationData` not `UserCreationDto`)
+- AND if Entity and VO are structurally identical, a DTO SHALL NOT be created — Controller/Service map directly
+
+#### Scenario: DAO with MyBatis-Plus IService
+
+- GIVEN a business module needs database access
+- WHEN defining the data access layer
+- THEN DAO interfaces SHALL extend MyBatis-Plus `IService<Entity>` for single-table CRUD
+- AND DAO implementations SHALL extend `ServiceImpl<Mapper, Entity>` and be annotated with `@Repository`
+- AND the DAO SHALL be the only layer that references Mapper — Service SHALL NOT call Mapper directly
+- AND for single-table operations, the DAO SHALL rely on `ServiceImpl`'s built-in methods (`save`, `getById`, `list`, `page`, `count`, etc.)
+- AND for complex queries (multi-table joins, aggregations), custom methods SHALL be declared in the DAO interface and implemented in the DAO impl using injected Mappers
+
+#### Scenario: Service interface + implementation
+
+- GIVEN a business module contains business logic
+- WHEN defining the service layer
+- THEN the service SHALL consist of an interface in `service/` and an implementation in `service/impl/`
+- AND the implementation class SHALL be named with an `Impl` suffix (e.g., `XxxServiceImpl`)
+- AND the implementation SHALL depend on DAO interfaces, not on Mapper or EntityManager directly
+
+#### Scenario: Entities centralized in data module
+
+- GIVEN a database entity class exists
+- WHEN it is used by one or more business modules
+- THEN the entity SHALL be placed in the `data` module's `model/` package (no `entity/` sub-package)
+- AND enums that serve as entity field types SHALL also be placed in `data` (e.g., `model/enums/`)
+- AND business modules that need the entity SHALL depend on the `data` module (which they already do)
 
 ### Requirement: Group and Artifact Naming
 

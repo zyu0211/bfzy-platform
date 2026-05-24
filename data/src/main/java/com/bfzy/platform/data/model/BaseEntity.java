@@ -1,4 +1,4 @@
-package com.bfzy.platform.data.model.entity;
+package com.bfzy.platform.data.model;
 
 import lombok.Getter;
 import lombok.Setter;

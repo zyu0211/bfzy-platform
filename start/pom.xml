@@ -32,6 +32,10 @@
             <groupId>com.bfzy.platform</groupId>
             <artifactId>hello-world</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.bfzy.platform</groupId>
+            <artifactId>security</artifactId>
+        </dependency>
 
         <!-- Web（spring-boot-starter-web 由 common-spring 传递引入） -->
         <dependency>

@@ -35,13 +35,29 @@
 ```
 src/main/java/com/bfzy/platform/{module}/
 ├── controller/   → REST 控制器
-├── service/      → 业务逻辑
+├── service/
+│   ├── XxxService.java      # 业务接口
+│   └── impl/
+│       └── XxxServiceImpl.java  # 业务实现，调用 DAO 层
+├── dao/
+│   ├── XxxDao.java          # 数据访问接口（继承 IService<Entity>）
+│   └── impl/
+│       └── XxxDaoImpl.java  # extends ServiceImpl<Mapper, Entity>
 ├── mapper/       → MyBatis-Plus Mapper（extends BaseMapper<Entity>）
 ├── model/
-│   ├── dto/      → 传输对象
-│   ├── vo/       → 视图对象
-│   └── entity/   → 实体类（继承 BaseEntity）
+│   ├── vo/
+│   │   ├── request/  → API 请求类（Controller/Service 入参）
+│   │   └── response/ → API 响应类（Controller/Service 出参）
+│   └── dto/      → Entity ↔ VO 有 gap 时使用（不加 Dto 后缀），可选
 └── XxxCode.java  → 业务错误码（implements ErrorCode）
+```
+
+实体类统一放在 `data` 模块的 `model/` 下（无 `entity/` 子包），业务模块不单独放实体。类名加 `Entity` 后缀（`UserEntity`、`OrderEntity`）。
+
+### 3. 调用链
+
+```
+Controller → XxxService（接口）→ XxxServiceImpl → XxxDao（IService）→ XxxMapper（BaseMapper）→ DB
 ```
 
 ### 3. Mapper XML
